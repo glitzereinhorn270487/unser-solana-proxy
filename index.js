@@ -9,8 +9,9 @@ app.use(cors());
 // process.env.MORALIS_API_KEY wird von Vercel automatisch bereitgestellt
 const MORALIS_API_KEY = process.env.MORALIS_API_KEY;
 
-// Basis-URL für die Moralis Solana API (kann variieren, siehe Moralis Doku für aktuelle Version)
-const MORALIS_BASE_URL = 'https://deep-index.moralis.io/api/v2.2/solana';
+// KORRIGIERTE BASIS-URL für die Moralis Solana API
+// Dies ist die korrekte Gateway-URL für Solana-spezifische Endpunkte
+const MORALIS_BASE_URL = 'https://solana-gateway.moralis.io';
 
 // Überprüfung, ob der API-Key gesetzt ist (wichtig für die Fehlersuche)
 if (!MORALIS_API_KEY) {
@@ -23,8 +24,6 @@ if (!MORALIS_API_KEY) {
 // Route für Pump.fun
 app.get('/pumpfun', async (req, res) => {
     try {
-        // Dies ist ein bekannter Endpunkt für eine Liste von Pump.fun Coins
-        // Achtung: Dieser Endpunkt ist nicht offiziell und kann sich jederzeit ändern oder blockiert werden.
         const response = await axios.get('https://pump.fun/api/coins');
         res.json(response.data);
     } catch (error) {
@@ -33,32 +32,30 @@ app.get('/pumpfun', async (req, res) => {
     }
 });
 
-    // Route für Dexscreener über Moralis
-    app.get('/dexscreener', async (req, res) => {
-        try {
-            const wSOL_TOKEN_ADDRESS = 'So11111111111111111111111111111111111111112';
-            const network = 'mainnet'; // Oder 'devnet', je nachdem, welches Netzwerk du abfragen möchtest
+// Route für Dexscreener über Moralis
+app.get('/dexscreener', async (req, res) => {
+    try {
+        const wSOL_TOKEN_ADDRESS = 'So11111111111111111111111111111111111111112';
+        const network = 'mainnet'; // Das Netzwerk muss als Teil des Pfades übergeben werden
 
-            const response = await axios.get(`${MORALIS_BASE_URL}/token/${network}/${wSOL_TOKEN_ADDRESS}/price`, {
-                headers: {
-                    'Authorization': `Bearer ${MORALIS_API_KEY}`,
-                    'accept': 'application/json'
-                },
-                // Der 'params' Block ist für diesen Endpunkt nicht mehr nötig und wird entfernt.
-                // params: {
-                //     chain: 'solana'
-                // }
-            });
-            res.json(response.data); // Sollte die Preisdaten von wSOL zurückgeben
+        // Der axios-Aufruf verwendet jetzt die korrigierte Basis-URL
+        const response = await axios.get(`${MORALIS_BASE_URL}/token/${network}/${wSOL_TOKEN_ADDRESS}/price`, {
+            headers: {
+                'Authorization': `Bearer ${MORALIS_API_KEY}`, // Authentifizierung mit JWT als Bearer-Token
+                'accept': 'application/json'
+            },
+            // Der 'params' Block für 'chain' wird hier nicht benötigt, da 'network' im Pfad ist.
+        });
+        res.json(response.data); // Sollte die Preisdaten von wSOL zurückgeben
 
-        } catch (error) {
-            console.error('Fehler beim Abrufen von Dexscreener über Moralis:', error.message);
-            const errorDetails = error.response ? error.response.data : error.message;
-            res.status(500).json({ error: 'Fehler beim Abrufen von Dexscreener API über Moralis', details: errorDetails });
+    } catch (error) {
+        console.error('Fehler beim Abrufen von Dexscreener über Moralis:', error.message);
+        const errorDetails = error.response ? error.response.data : error.message;
+        res.status(500).json({ error: 'Fehler beim Abrufen von Dexscreener API über Moralis', details: errorDetails });
     }
 });
 
-// Route für GMGN (bleibt beim Platzhalter, da keine offizielle API bekannt)
+// Route für GMGN
 app.get('/gmgn', async (req, res) => {
     try {
         const response = await axios.get('https://api.example.com/gmgn-data'); // PLATZHALTER! ERSETZEN!
@@ -69,7 +66,7 @@ app.get('/gmgn', async (req, res) => {
     }
 });
 
-// Route für Fourmemes (bleibt beim Platzhalter, da keine offizielle API bekannt)
+// Route für Fourmemes
 app.get('/fourmemes', async (req, res) => {
     try {
         const response = await axios.get('https://api.example.com/fourmemes-data'); // PLATZHALTER! ERSETZEN!
@@ -80,7 +77,7 @@ app.get('/fourmemes', async (req, res) => {
     }
 });
 
-// Standard-Route für den Fall, dass der Stamm-URL aufgerufen wird
+// Standard-Route
 app.get('/', (req, res) => {
     res.send('Solana Memecoin Proxy is running. Use /pumpfun, /dexscreener, /gmgn, or /fourmemes endpoints.');
 });
