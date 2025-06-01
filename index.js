@@ -33,28 +33,28 @@ app.get('/pumpfun', async (req, res) => {
     }
 });
 
-// Route für Dexscreener über Moralis
-app.get('/dexscreener', async (req, res) => {
-    try {
-        // Test: Abrufen des Preises für Wrapped SOL (wSOL) auf Solana über Moralis
-        const wSOL_TOKEN_ADDRESS = 'So11111111111111111111111111111111111111112';
+    // Route für Dexscreener über Moralis
+    app.get('/dexscreener', async (req, res) => {
+        try {
+            const wSOL_TOKEN_ADDRESS = 'So11111111111111111111111111111111111111112';
+            const network = 'mainnet'; // Oder 'devnet', je nachdem, welches Netzwerk du abfragen möchtest
 
-        const response = await axios.get(`${MORALIS_BASE_URL}/token/${wSOL_TOKEN_ADDRESS}/price`, {
-            headers: {
-                // HIER IST DIE WICHTIGE ÄNDERUNG: 'X-API-Key' wird zu 'Authorization: Bearer'
-                'Authorization': `Bearer ${MORALIS_API_KEY}`,
-                'accept': 'application/json'
-            },
-            params: {
-                chain: 'solana'
-            }
-        });
-        res.json(response.data); // Sollte die Preisdaten von wSOL zurückgeben
+            const response = await axios.get(`${MORALIS_BASE_URL}/token/${network}/${wSOL_TOKEN_ADDRESS}/price`, {
+                headers: {
+                    'Authorization': `Bearer ${MORALIS_API_KEY}`,
+                    'accept': 'application/json'
+                },
+                // Der 'params' Block ist für diesen Endpunkt nicht mehr nötig und wird entfernt.
+                // params: {
+                //     chain: 'solana'
+                // }
+            });
+            res.json(response.data); // Sollte die Preisdaten von wSOL zurückgeben
 
-    } catch (error) {
-        console.error('Fehler beim Abrufen von Dexscreener über Moralis:', error.message);
-        const errorDetails = error.response ? error.response.data : error.message;
-        res.status(500).json({ error: 'Fehler beim Abrufen von Dexscreener API über Moralis', details: errorDetails });
+        } catch (error) {
+            console.error('Fehler beim Abrufen von Dexscreener über Moralis:', error.message);
+            const errorDetails = error.response ? error.response.data : error.message;
+            res.status(500).json({ error: 'Fehler beim Abrufen von Dexscreener API über Moralis', details: errorDetails });
     }
 });
 
