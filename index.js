@@ -21,20 +21,35 @@ if (!MORALIS_API_KEY) {
     console.log(`MORALIS_API_KEY read successfully: ${MORALIS_API_KEY.substring(0, 5)}... (truncated)`);
 }
 
-// Route für Pump.fun (jetzt über Moralis)
+// Route für Pump.fun (jetzt über den spezifischen Moralis Pump.fun Endpunkt)
 app.get('/pumpfun', async (req, res) => {
     try {
-        const exchangeName = 'pump.fun'; // Der Name der Exchange für Pump.fun
         const network = 'mainnet'; // Das Netzwerk für Solana
+        const exchangeIdentifier = 'pumpfun'; // Der spezifische Bezeichner für Pump.fun in der Moralis API
 
-        // Der Moralis-Endpunkt für "Get tokens by exchange"
-        const moralisPumpFunUrl = `${MORALIS_BASE_URL}/token/${network}/get-all-tokens-by-exchange`;
+        // Der korrekte Moralis-Endpunkt für neue Pump.fun-Tokens
+        const moralisPumpFunUrl = `${MORALIS_BASE_URL}/token/${network}/exchange/${exchangeIdentifier}/new`;
 
         const response = await axios.get(moralisPumpFunUrl, {
             headers: {
                 'Authorization': `Bearer ${MORALIS_API_KEY}`,
                 'accept': 'application/json'
             },
+            params: {
+                limit: 100 // Optional: Limitiere die Anzahl der zurückgegebenen Tokens
+            }
+        });
+
+        // Die Antwort von Moralis wird direkt zurückgegeben
+        res.json(response.data);
+
+    } catch (error) {
+        console.error('Fehler beim Abrufen von Pump.fun API über Moralis:', error.message);
+        const errorDetails = error.response ? error.response.data : error.message;
+        res.status(500).json({ error: 'Fehler beim Abrufen von Pump.fun API über Moralis', details: errorDetails });
+    }
+});
+
             params: {
                 exchange: exchangeName // Der Query-Parameter für die Exchange
             }
