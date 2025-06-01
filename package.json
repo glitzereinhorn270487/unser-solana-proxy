@@ -2,9 +2,9 @@
   "name": "solana-memecoin-proxy",
   "version": "0.0.1",
   "description": "A proxy for memecoin APIs on Solana.",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "express": "^4.19.2",
