@@ -34,18 +34,32 @@ app.get('/pumpfun', async (req, res) => {
     }
 });
 
+
+
 // NEUE Route für Dexscreener über Moralis
 app.get('/dexscreener', async (req, res) => {
     try {
-        // Moralis API-Aufruf, um die Top-Paare (oder ähnliche Daten) zu erhalten.
-        // Die exakten Moralis-Endpunkte können variieren.
-        // Beispiel: Abrufen von Top-Token-Preisen oder Swap-Daten auf Solana.
-        // HINWEIS: Es gibt keinen direkten Moralis-Endpunkt, der "Top 10 Dexscreener Pairs" nach Marktanteil liefert,
-        // wie der alte Dexscreener-Endpunkt. Moralis liefert eher Daten pro Token/Paar.
-        // Du müsstest hier genau den Moralis-Endpunkt finden, der für deine Bedürfnisse am besten passt.
-        // Ein gängiger Anwendungsfall wäre 'getPairAddresses' oder 'getTradeHistory'.
-        // Für eine Liste von Token-Preisen könnte man 'getTokenPrice' für bekannte Token-Adressen nutzen.
+        // Robusterer Test: Abrufen der neuesten Blocknummer auf Solana über Moralis
+        // Dies sollte zeigen, ob dein API-Key funktioniert und Moralis antwortet.
+        const response = await axios.get(`${MORALIS_BASE_URL}/block/latest`, {
+            headers: {
+                'X-API-Key': MORALIS_API_KEY,
+                'accept': 'application/json'
+            },
+            params: {
+                chain: 'solana' // Explicitly specify Solana chain
+            }
+        });
+        res.json(response.data);
 
+    } catch (error) {
+        console.error('Fehler beim Abrufen von Dexscreener über Moralis:', error.message);
+        const errorDetails = error.response ? error.response.data : error.message;
+        res.status(500).json({ error: 'Fehler beim Abrufen von Dexscreener API über Moralis', details: errorDetails });
+    }
+});
+
+// ... (Restlicher Code für Pump.fun, GMGN, Fourmemes, Standard-Route, Server start
         // Beispiel für Moralis API: Abrufen von "Top DEXs by Volume" oder ähnlichem,
         // um daraus Paare zu finden. Dieser Endpunkt existiert so nicht direkt in Moralis,
         // du müsstest spezifische Token-Adressen abfragen oder über Swap-Daten gehen.
