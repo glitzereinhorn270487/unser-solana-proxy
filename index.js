@@ -33,20 +33,31 @@ app.get('/pumpfun', async (req, res) => {
     }
 });
 
+// Route für Pump.fun (bleibt gleich)
+app.get('/pumpfun', async (req, res) => {
+    try {
+        const response = await axios.get('https://pump.fun/api/coins');
+        res.json(response.data);
+    } catch (error) {
+        console.error('Fehler beim Abrufen von Pump.fun:', error.message);
+        res.status(500).json({ error: 'Fehler beim Abrufen von Pump.fun API', details: error.message });
+    }
+});
+
 // NEUE Route für Dexscreener über Moralis
 app.get('/dexscreener', async (req, res) => {
     try {
         // Test: Abrufen des Preises für Wrapped SOL (wSOL) auf Solana über Moralis
-        // Token-Adresse für Wrapped SOL (wSOL) auf Solana
         const wSOL_TOKEN_ADDRESS = 'So11111111111111111111111111111111111111112';
 
         const response = await axios.get(`${MORALIS_BASE_URL}/token/${wSOL_TOKEN_ADDRESS}/price`, {
             headers: {
-                'X-API-Key': MORALIS_API_KEY,
+                // HIER IST DIE WICHTIGE ÄNDERUNG: 'X-API-Key' wird zu 'Authorization: Bearer'
+                'Authorization': `Bearer ${MORALIS_API_KEY}`, // <-- DIESE ZEILE IST NEU
                 'accept': 'application/json'
             },
             params: {
-                chain: 'solana' // Explicitly specify Solana chain
+                chain: 'solana'
             }
         });
         res.json(response.data); // Sollte die Preisdaten von wSOL zurückgeben
@@ -57,6 +68,41 @@ app.get('/dexscreener', async (req, res) => {
         res.status(500).json({ error: 'Fehler beim Abrufen von Dexscreener API über Moralis', details: errorDetails });
     }
 });
+
+// Route für GMGN (bleibt gleich)
+app.get('/gmgn', async (req, res) => {
+    try {
+        const response = await axios.get('https://api.example.com/gmgn-data'); // PLATZHALTER! ERSETZEN!
+        res.json(response.data);
+    } catch (error) {
+        console.error('Fehler beim Abrufen von GMGN:', error.message);
+        res.status(500).json({ error: 'Fehler beim Abrufen von GMGN API', details: error.message });
+    }
+});
+
+// Route für Fourmemes (bleibt gleich)
+app.get('/fourmemes', async (req, res) => {
+    try {
+        const response = await axios.get('https://api.example.com/fourmemes-data'); // PLATZHALTER! ERSETZEN!
+        res.json(response.data);
+    } catch (error) {
+        console.error('Fehler beim Abrufen von Fourmemes:', error.message);
+        res.status(500).json({ error: 'Fehler beim Abrufen von Fourmemes API', details: error.message });
+    }
+});
+
+// Standard-Route (bleibt gleich)
+app.get('/', (req, res) => {
+    res.send('Solana Memecoin Proxy is running. Use /pumpfun, /dexscreener, /gmgn, or /fourmemes endpoints.');
+});
+
+// Server starten (bleibt gleich)
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Proxy listening on port ${PORT}`);
+});
+
+
 
 // ... (Restlicher Code für GMGN, Fourmemes, Standard-Route, Server starten bleibt gleich)
                
