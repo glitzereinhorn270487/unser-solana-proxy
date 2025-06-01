@@ -33,12 +33,14 @@ app.get('/pumpfun', async (req, res) => {
     }
 });
 
-// Route für Dexscreener über Moralis
+// NEUE Route für Dexscreener über Moralis
 app.get('/dexscreener', async (req, res) => {
     try {
-        // Robuster Test: Abrufen der neuesten Blocknummer auf Solana über Moralis
-        // Dies sollte zeigen, ob dein API-Key funktioniert und Moralis antwortet.
-        const response = await axios.get(`${MORALIS_BASE_URL}/block/latest`, {
+        // Test: Abrufen des Preises für Wrapped SOL (wSOL) auf Solana über Moralis
+        // Token-Adresse für Wrapped SOL (wSOL) auf Solana
+        const wSOL_TOKEN_ADDRESS = 'So11111111111111111111111111111111111111112';
+
+        const response = await axios.get(`${MORALIS_BASE_URL}/token/${wSOL_TOKEN_ADDRESS}/price`, {
             headers: {
                 'X-API-Key': MORALIS_API_KEY,
                 'accept': 'application/json'
@@ -47,15 +49,19 @@ app.get('/dexscreener', async (req, res) => {
                 chain: 'solana' // Explicitly specify Solana chain
             }
         });
-        res.json(response.data);
+        res.json(response.data); // Sollte die Preisdaten von wSOL zurückgeben
 
     } catch (error) {
         console.error('Fehler beim Abrufen von Dexscreener über Moralis:', error.message);
-        // Überprüfen, ob es ein Moralis-Fehler ist (z.B. 401 Unauthorized, 400 Bad Request)
         const errorDetails = error.response ? error.response.data : error.message;
         res.status(500).json({ error: 'Fehler beim Abrufen von Dexscreener API über Moralis', details: errorDetails });
     }
 });
+
+// ... (Restlicher Code für GMGN, Fourmemes, Standard-Route, Server starten bleibt gleich)
+               
+
+
 
 // Route für GMGN (bleibt beim Platzhalter, da keine offizielle API bekannt)
 app.get('/gmgn', async (req, res) => {
