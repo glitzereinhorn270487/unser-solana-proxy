@@ -9,7 +9,7 @@ app.use(cors()); // CORS für alle Anfragen aktivieren
 app.get('/pumpfun', async (req, res) => {
   try {
     // Dies ist ein bekannter Endpunkt für eine Liste von Pump.fun Coins
-    const response = await axios.get('https://api.pump.fun/coins');
+    const response = await axios.get('https://pump.fun/api/coins');
     res.json(response.data);
   } catch (error) {
     console.error('Fehler beim Abrufen von Pump.fun:', error.message);
