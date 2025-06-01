@@ -50,23 +50,7 @@ app.get('/pumpfun', async (req, res) => {
     }
 });
 
-            params: {
-                exchange: exchangeName // Der Query-Parameter für die Exchange
-            }
-        });
-
-        // Die Antwort von Moralis wird direkt zurückgegeben
-        res.json(response.data);
-
-    } catch (error) {
-        console.error('Fehler beim Abrufen von Pump.fun über Moralis:', error.message);
-        const errorDetails = error.response ? error.response.data : error.message;
-        res.status(500).json({ error: 'Fehler beim Abrufen von Pump.fun API über Moralis', details: errorDetails });
-    }
-});
-
-
-// Route für Dexscreener über Moralis
+// Route für Dexscreener über Moralis (Token Price Test)
 app.get('/dexscreener', async (req, res) => {
     try {
         const wSOL_TOKEN_ADDRESS = 'So11111111111111111111111111111111111111112';
@@ -89,7 +73,7 @@ app.get('/dexscreener', async (req, res) => {
     }
 });
 
-// Route für GMGN
+// Route für GMGN (bleibt beim Platzhalter, da keine offizielle API bekannt)
 app.get('/gmgn', async (req, res) => {
     try {
         const response = await axios.get('https://api.example.com/gmgn-data'); // PLATZHALTER! ERSETZEN!
@@ -100,7 +84,7 @@ app.get('/gmgn', async (req, res) => {
     }
 });
 
-// Route für Fourmemes
+// Route für Fourmemes (bleibt beim Platzhalter, da keine offizielle API bekannt)
 app.get('/fourmemes', async (req, res) => {
     try {
         const response = await axios.get('https://api.example.com/fourmemes-data'); // PLATZHALTER! ERSETZEN!
@@ -111,7 +95,7 @@ app.get('/fourmemes', async (req, res) => {
     }
 });
 
-// Standard-Route
+// Standard-Route für den Fall, dass der Stamm-URL aufgerufen wird
 app.get('/', (req, res) => {
     res.send('Solana Memecoin Proxy is running. Use /pumpfun, /dexscreener, /gmgn, or /fourmemes endpoints.');
 });
