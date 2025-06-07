@@ -5,29 +5,12 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 
-// Moralis API Key aus Umgebungsvariablen laden
-const MORALIS_API_KEY = process.env.MORALIS_API_KEY;
-
-// KORRIGIERTE BASIS-URL für die Moralis Solana API
-const MORALIS_BASE_URL = 'https://solana-gateway.moralis.io';
-
-// Überprüfung, ob der API-Key gesetzt ist (wichtig für die Fehlersuche)
-if (!MORALIS_API_KEY) {
-    console.error('ERROR: MORALIS_API_KEY ist in den Umgebungsvariablen nicht gesetzt oder leer!');
-} else {
-    console.log(`MORALIS_API_KEY read successfully: ${MORALIS_API_KEY.substring(0, 5)}... (truncated)`);
-}
-
-// Route für Pump.fun (neue Tokens über Moralis)
+// Route für Pump.fun 
 app.get('/pumpfun', async (req, res) => {
     try {
         const network = 'mainnet';
         const exchangeIdentifier = 'pumpfun';
-        const moralisPumpFunUrl = `${MORALIS_BASE_URL}/token/${network}/exchange/${exchangeIdentifier}/new`;
-
-        const response = await axios.get(moralisPumpFunUrl, {
-            headers: {
-                'Authorization': `Bearer ${MORALIS_API_KEY}`,
+     
                 'accept': 'application/json'
             },
             params: {
@@ -35,13 +18,6 @@ app.get('/pumpfun', async (req, res) => {
             }
         });
         res.json(response.data);
-
-    } catch (error) {
-        console.error('Fehler beim Abrufen von Pump.fun API über Moralis:', error.message);
-        const errorDetails = error.response ? error.response.data : error.message;
-        res.status(500).json({ error: 'Fehler beim Abrufen von Pump.fun API über Moralis', details: errorDetails });
-    }
-});
 
 // Route für Dexscreener über Moralis (Token Price Test) - Behalten wir als Beispiel
 app.get('/dexscreener', async (req, res) => {
@@ -55,13 +31,6 @@ app.get('/dexscreener', async (req, res) => {
             },
         });
         res.json(response.data);
-
-    } catch (error) {
-        console.error('Fehler beim Abrufen von Dexscreener über Moralis:', error.message);
-        const errorDetails = error.response ? error.response.data : error.message;
-        res.status(500).json({ error: 'Fehler beim Abrufen von Dexscreener API über Moralis', details: errorDetails });
-    }
-});
 
 // NEUE Route: Dexscreener-Details für ein spezifisches Token
 app.get('/dexscreener-pair-details/:tokenAddress', async (req, res) => {
